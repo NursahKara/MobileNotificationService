@@ -1,4 +1,5 @@
-﻿using Microsoft.Owin.Security.OAuth;
+﻿using DevOne.Security.Cryptography.BCrypt;
+using Microsoft.Owin.Security.OAuth;
 using MobileNotificationService.Models;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace MobileNotificationService.Providers
                 var username = context.UserName.Split(' ')[0];
                 var systemId = context.UserName.Split(' ')[1];
                 var user = ctx.Users.SingleOrDefault(w => w.Username == username);
-                if (user != null && user.PasswordHash == context.Password && user.SystemId.ToString() == systemId)
+                if (user != null && BCryptHelper.CheckPassword(context.Password, user.PasswordHash) && user.SystemId.ToString() == systemId)
                 {
                     var identity = new ClaimsIdentity(context.Options.AuthenticationType);
                     identity.AddClaim(new Claim(ClaimTypes.Name, user.Username));
